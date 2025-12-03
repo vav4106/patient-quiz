@@ -1,0 +1,10 @@
+import datetime
+date=datetime.date.today()
+current_yr=date.year
+n=input("Enter tha name of the person:")
+yr=int(input("Enter the age of the student: "))
+age= current_yr-yr
+if(age>60):
+    print("the person is a senior citizzen")
+else:
+    print("the person is not a senior citizen")

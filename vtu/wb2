@@ -1,0 +1,7 @@
+a=int(input("Enter the first side of a triangle :"))
+b=int(input("Enter the second side of a triangle :"))
+c=int(input("Enter the third side of a triangle :"))
+if(((a+b)<=c)or((b+c)<=a)or((c+a)<=b)):
+    print("It can not form the triangle")
+else:
+    print("It can form the triangle")

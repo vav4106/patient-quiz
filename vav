@@ -1,0 +1,42 @@
+import json
+
+# Sample knowledge base
+knowledge_base = {
+    "fever, cough, sore throat": {
+        "disease": "Flu or Common Cold",
+        "cure": "Rest, warm fluids, paracetamol"
+    },
+    "fever, headache, nausea": {
+        "disease": "Dengue or Malaria",
+        "cure": "Drink fluids, avoid self-medication, visit doctor"
+    },
+    "chest pain, shortness of breath": {
+        "disease": "Heart problem or Asthma",
+        "cure": "Seek emergency medical help immediately"
+    },
+    "stomach pain, vomiting, diarrhea": {
+        "disease": "Food Poisoning",
+        "cure": "Drink oral rehydration solution, avoid spicy food"
+    }
+}
+
+print("🤖 Medical Chatbot: Hello! Tell me your symptoms (type 'exit' to quit).")
+
+while True:
+    user_input = input("You: ").lower().strip()
+
+    if user_input == "exit":
+        print("🤖 Chatbot: Take care! Remember, I am not a doctor. Bye 👋")
+        break
+
+    found = False
+    for symptoms, info in knowledge_base.items():
+        # Match if all keywords from symptom list are present in user input
+        if all(symptom in user_input for symptom in symptoms.split(", ")):
+            print(f"🤖 Chatbot: Possible condition → {info['disease']}")
+            print(f"🤖 Chatbot: Suggested cure → {info['cure']}")
+            found = True
+            break
+
+    if not found:
+        print("🤖 Chatbot: Sorry, I don't recognize these symptoms. Please consult a doctor.")

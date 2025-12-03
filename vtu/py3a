@@ -1,0 +1,16 @@
+n=int(input("Enter the range of value to be read:"))
+list=[]
+for i in range(1,n+1):
+    ele=int(input("enter a number:"))
+    list.append(ele)
+print(list)
+mean=sum(list)/len(list)
+list_1=[]
+for i in list:
+    a=(i-mean)**2 
+    list_1.append(a)
+var=sum(list_1)/len(list_1)
+SD=(var)**0.5
+print("mean of the list :",mean)
+print("varince of the list:",var)
+print("standard deviation of the list:",SD)

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Automated Patient Education System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+/* Minimal CSS: gradient background, large buttons, readable fonts */
+body{ margin:0; font-family:Arial; background:linear-gradient(135deg,#43cea2,#185a9d); text-align:center; color:white; }
+.box{ background:white; color:black; max-width:760px; margin:20px auto; padding:20px; border-radius:15px; box-shadow:0 0 10px black; }
+input,select{ padding:12px; font-size:16px; width:85%; margin:5px; border-radius:10px; }
+button{ width:85%; padding:14px; margin:6px; font-size:18px; background:#2d9cdb; color:white; border:none; border-radius:12px; cursor:pointer; }
+.correct{background:green!important;} .wrong{background:red!important;}
+</style>
+</head>
+<body>
+<h1>🩺 Automated Patient Education System</h1>
+
+<div class="box" id="loginBox">
+  <h2>Enter Phone Number</h2>
+  <input id="phone" placeholder="Enter Phone Number"><br>
+  <button onclick="login()">START</button>
+</div>
+
+<div class="box" id="dashboard" style="display:none">
+  <select id="language" onchange="setLanguage()">
+    <option value="en">English</option>
+    <option value="hi">Hindi</option>
+    <option value="te">Telugu</option>
+    <option value="kn">Kannada</option>
+  </select>
+  <h2>Select Disease</h2>
+  <button onclick="showDisease('covid')">COVID-19</button>
+  <button onclick="showDisease('heart')">Heart Disease</button>
+  <button onclick="showDisease('diabetes')">Diabetes</button>
+  <button onclick="showDisease('anxiety')">Anxiety</button>
+  <div id="content" style="margin-top:15px;font-size:18px;"></div>
+  <button onclick="speak()">🔊 VOICE</button>
+  <h2>Quiz</h2>
+  <div id="question"></div>
+  <button id="opt1" onclick="checkAnswer(0)"></button>
+  <button id="opt2" onclick="checkAnswer(1)"></button>
+  <button id="opt3" onclick="checkAnswer(2)"></button>
+  <h2>Score: <span id="score">0</span></h2>
+</div>
+
+<script>
+let score=0,currentDisease="",qIndex=0,currentLang="en",lastContent="";
+const data={
+  covid:{
+    en:"Symptoms: Fever, cough. Treatment: Rest, medicines. Precautions: Mask, vaccine. Diet: Fruits",
+    hi:"लक्षण: बुखार, खांसी। इलाज: आराम, दवा। सावधानियां: मास्क, टीका। आहार: फल",
+    te:"లక్షణాలు: జ్వరం, దగ్గు. చికిత్స: విశ్రాంతి, మందులు. జాగ్రత్తలు: మాస్క్, టీకా. ఆహారం: పండ్లు",
+    kn:"ಲಕ್ಷಣಗಳು: ಜ್ವರ, ಕೆಮ್ಮು. ಚಿಕಿತ್ಸೆ: ವಿಶ್ರಾಂತಿ, ಔಷಧಿ. ಮುಂಜಾಗ್ರತೆ: ಮಾಸ್ಕ್, ಲಸಿಕೆ. ಆಹಾರ: ಹಣ್ಣು",
+    quiz:[
+      {q:"COVID spreads through?",o:["Air","Water","Food"],a:0},
+      {q:"Main symptom?",o:["Fever","Leg pain","Eye pain"],a:0}
+    ]
+  },
+  heart:{
+    en:"Symptoms: Chest pain. Treatment: Tablets. Precautions: Exercise. Diet: Less oil",
+    hi:"लक्षण: सीने में दर्द। इलाज: दवा। सावधानी: व्यायाम। आहार: कम तेल",
+    te:"లక్షణాలు: ఛాతి నొప్పి. చికిత్స: మందులు. జాగ్రత్తలు: వ్యాయామం. ఆహారం: తక్కువ నూనె",
+    kn:"ಲಕ್ಷಣ: ಎದುರೆ ನೋವು. ಚಿಕಿತ್ಸೆ: ಔಷಧಿ. ಮುಂಜಾಗ್ರತೆ: ವ್ಯಾಯಾಮ. ಆಹಾರ: ಕಡಿಮೆ ಎಣ್ಣೆ",
+    quiz:[
+      {q:"Heart pain in?",o:["Chest","Leg","Stomach"],a:0},
+      {q:"Best habit?",o:["Walking","Smoking","Alcohol"],a:0}
+    ]
+  },
+  diabetes:{
+    en:"Symptoms: Thirst, urination. Treatment: Insulin. Precautions: Sugar test. Diet: Vegetables",
+    hi:"लक्षण: प्यास, पेशाब। इलाज: इंसुलिन। सावधानी: शुगर जांच। आहार: सब्जी",
+    te:"లక్షణాలు: దాహం, మూత్రం. చికిత్స: ఇన్సులిన్. జాగ్రత్త: షుగర్ టెస్ట్. ఆహారం: కూరగాయలు",
+    kn:"ಲಕ್ಷಣ: ದಾಹ, ಮೂತ್ರ. ಚಿಕಿತ್ಸೆ: ಇನ್ಸುಲಿನ್. ಮುಂಜಾಗ್ರತೆ: ಶುಗರ್ ಪರೀಕ್ಷೆ. ಆಹಾರ: ತರಕಾರಿ",
+    quiz:[
+      {q:"High sugar causes?",o:["Diabetes","TB","Cancer"],a:0},
+      {q:"Best food?",o:["Vegetables","Sweets","Cola"],a:0}
+    ]
+  },
+  anxiety:{
+    en:"Symptoms: Fear, sweating. Treatment: Counseling. Precautions: Sleep. Diet: Light food",
+    hi:"लक्षण: डर, पसीना। इलाज: काउंसलिंग। सावधानी: नींद । आहार: हल्का भोजन",
+    te:"లక్షణాలు: భయం, చెమట. చికిత్స: కౌన్సిలింగ్. జాగ్రత్తలు: నిద్ర. ఆహారం: తేలికపాటి భోజనం",
+    kn:"ಲಕ್ಷಣ: ಭಯ, ಬೆವರು. ಚಿಕಿತ್ಸೆ: ಸಮಾಲೋಚನೆ. ಮುಂಜಾಗ್ರತೆ: ನಿದ್ರೆ. ಆಹಾರ: ಲಘು ಆಹಾರ",
+    quiz:[
+      {q:"Anxiety affects?",o:["Mind","Liver","Kidney"],a:0},
+      {q:"Best solution?",o:["Meditation","Overthinking","No sleep"],a:0}
+    ]
+  }
+};
+
+function login(){let p=document.getElementById("phone").value;if(p===""){alert("Enter phone number");return;}document.getElementById("loginBox").style.display="none";document.getElementById("dashboard").style.display="block";}
+function setLanguage(){currentLang=document.getElementById("language").value;if(currentDisease) showDisease(currentDisease);}
+function showDisease(d){currentDisease=d;qIndex=0;let info=data[d][currentLang];document.getElementById("content").innerHTML="<h3>"+d.toUpperCase()+"</h3>"+info;lastContent=info;loadQuiz();}
+function loadQuiz(){let q=data[currentDisease].quiz[qIndex];document.getElementById("question").innerHTML="<b>"+q.q+"</b>";document.getElementById("opt1").innerText=q.o[0];document.getElementById("opt2").innerText=q.o[1];document.getElementById("opt3").innerText=q.o[2];resetButtons();}
+function resetButtons(){opt1.className="";opt2.className="";opt3.className="";}
+function checkAnswer(sel){let q=data[currentDisease].quiz[qIndex];if(sel===q.a){score+=10;document.getElementById("score").innerText=score;document.getElementById("opt"+(sel+1)).className="correct";}else{score-=5;document.getElementById("score").innerText=score;document.getElementById("opt"+(sel+1)).className="wrong";}qIndex++;if(qIndex<data[currentDisease].quiz.length){setTimeout(loadQuiz,1000);}}
+function speak(){let u=new SpeechSynthesisUtterance(lastContent);let map={en:"en-US",hi:"hi-IN",te:"te-IN",kn:"kn-IN"};u.lang=map[currentLang];speechSynthesis.speak(u);}
+</script>
+</body>
+</html>
+

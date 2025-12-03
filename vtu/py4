@@ -1,0 +1,18 @@
+fp=open("LST.txt",'r+')
+count=0
+word_lst=[]
+for line in fp.readlines():
+    word_lst+=line.split()
+word_dst={}
+for wd in set(word_lst):
+    word_dst[wd]=word_lst.count(wd)
+for i in sorted(word_dst.value(),reverse=True):
+    for key in word_dst:
+        if(word_dst[key]==i):
+            print((count+1),"The word",key,"frequency=",i)
+            del word_dst[key]
+            count=count+1
+            break
+        if count==10:
+            break
+
