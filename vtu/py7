@@ -1,0 +1,10 @@
+def DivExp(a,b):
+    assert a>0
+    try:
+        c=a/b
+        return(c)
+    except:
+        return("b value cannot be 0")
+a=int(input("Enter the value a=>"))
+b=int(input("Enter the value b=>"))
+print(DivExp(a,b))

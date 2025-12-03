@@ -1,0 +1,16 @@
+n=int(input("Enter range of value:"))
+list=[]
+for i in range(1,n+1):
+    ele=int(input("Enter a number:"))
+    list.append(ele)
+print(list)
+mean=sum(list)/len(list)
+l1=[]
+for i in list:
+    a=(i-mean)**2
+    l1.append(a)
+var=sum(l1)/len(l1)
+SD=(var)**0.5
+print("mean=",mean)
+print("variance=",var)
+print("standard deviation=",SD)
