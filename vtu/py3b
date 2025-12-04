@@ -1,5 +1,0 @@
-n=input("Enter a number:")
-for i in range(0,10):
-    if n.count(str(i))!=0:
-        print("number",i,"occurs",n.count(str(i)),"times")
-        

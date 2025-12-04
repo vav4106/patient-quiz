@@ -1,7 +1,0 @@
-str1=input("Enter a string: ")
-str2=str1[::-1]
-
-if(str1.lower()==str2.lower()):
-    print("Entered string is a palindrome")
-else:
-    print("Entered string is not a palindrome")
